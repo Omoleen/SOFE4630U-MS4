@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filter-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: filter
+  template:
+    metadata:
+      labels:
+        app: filter
+    spec:
+      containers:
+        - image: $FILTER_IMAGE
+          name: filter
+          env:
+            - name: GCP_PROJECT
+              value: $PROJECT
+            - name: SUB_ID
+              value: meterReadings-filter-sub
+            - name: TOPIC_NAME
+              value: meterReadings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: convert-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: convert
+  template:
+    metadata:
+      labels:
+        app: convert
+    spec:
+      containers:
+        - image: $CONVERT_IMAGE
+          name: convert
+          env:
+            - name: GCP_PROJECT
+              value: $PROJECT
+            - name: SUB_ID
+              value: meterReadings-convert-sub
+            - name: TOPIC_NAME
+              value: meterReadings
+---
